@@ -12,17 +12,25 @@
         <el-menu
           background-color="#333744"
           text-color="#fff"
-          active-text-color="#ffd04b"
+          active-text-color="#409EFF"
         >
-          <el-submenu index="1">
+          <el-submenu
+            :index="item.id + ''"
+            v-for="item in menulist"
+            :key="item.id"
+          >
             <template slot="title">
-              <i class="el-icon-location"></i>
-              <span>导航一</span>
+              <i :class="iconsObj[item.id]"></i>
+              <span>{{ item.authName }}</span>
             </template>
-            <el-menu-item index="1-1">
+            <el-menu-item
+              :index="subItem.id"
+              v-for="subItem in item.children"
+              :key="subItem.id"
+            >
               <template slot="title">
-                <i class="el-icon-location"></i>
-                <span>导航一</span>
+                <i class="el-icon-menu"></i>
+                <span>{{ subItem.authName }}</span>
               </template>
             </el-menu-item>
           </el-submenu>
@@ -34,6 +42,18 @@
 </template>
 <script>
 export default {
+  data() {
+    return {
+      menulist: [],
+      iconsObj: {
+        125: 'iconfont icon-user',
+        103: 'iconfont icon-tijikongjian',
+        101: 'iconfont icon-shangpin',
+        102: 'iconfont icon-danju',
+        145: 'iconfont icon-baobiao',
+      },
+    }
+  },
   created() {
     this.getMenuList()
   },
@@ -43,8 +63,6 @@ export default {
       this.$router.push('/login')
     },
     async getMenuList() {
-      const token = window.sessionStorage.getItem('token')
-      console.log(token)
       const { data: res } = await this.$http.get('menus')
       if (res.meta.status !== 200) return this.$message.error(res.meta.msg)
       this.menulist = res.data
@@ -78,5 +96,8 @@ export default {
 }
 .el-main {
   background: #e8ecef;
+}
+.iconfont {
+  margin-right: 10px;
 }
 </style>
