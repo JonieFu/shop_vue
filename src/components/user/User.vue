@@ -86,11 +86,36 @@
                 size="mini"
                 type="warning"
                 icon="el-icon-setting"
+                @click="setRole(row)"
               ></el-button>
             </el-tooltip>
           </template>
         </el-table-column>
       </el-table>
+      <el-dialog
+        title="分配角色"
+        :visible.sync="setRoleDialogVisible"
+        width="50%"
+      >
+        <p>当前的用户：{{ userInfo.username }}</p>
+        <p>当前的角色：{{ userInfo.role_name }}</p>
+        <p>
+          分配新角色：
+          <el-select v-model="selectedRoleId" placeholder="请选择" size="mini">
+            <el-option
+              v-for="item in rolesList"
+              :key="item.id"
+              :label="item.roleName"
+              :value="item.id"
+            >
+            </el-option>
+          </el-select>
+        </p>
+        <span slot="footer" class="dialog-footer">
+          <el-button @click="setRoleDialogVisible = false">取 消</el-button>
+          <el-button type="primary" @click="saveRoleInfo">确 定</el-button>
+        </span>
+      </el-dialog>
       <el-pagination
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
@@ -249,12 +274,44 @@ export default {
           },
         ],
       },
+      setRoleDialogVisible: false,
+      userInfo: {},
+      rolesList: [],
+      selectedRoleId: '',
     }
   },
   created() {
     this.getUserList()
   },
   methods: {
+    async setRole(userInfo) {
+      this.userInfo = userInfo
+      // 获取所有角色的列表
+      const { data: res } = await this.$http.get('roles')
+      if (res.meta.status !== 200) {
+        return this.$message.error('获取角色列表失败')
+      }
+      this.rolesList = res.data
+      this.setRoleDialogVisible = true
+    },
+    async saveRoleInfo() {
+      if (!this.selectedRoleId) {
+        return this.$message.error('请选择要分配的角色！')
+      }
+      const { data: res } = await this.$http.put(
+        `users/${this.userInfo.id}/role`,
+        {
+          rid: this.selectedRoleId,
+        }
+      )
+      console.log(this.selectedRoleId)
+      console.log(res.data.rid)
+      if (res.meta.status !== 200) {
+        return this.$message.error('更新角色失败')
+      }
+      this.getUserList()
+      this.setRoleDialogVisible = false
+    },
     async getUserList() {
       const { data: res } = await this.$http.get('users', {
         params: this.queryInfo,
@@ -262,8 +319,8 @@ export default {
       if (res.meta.status !== 200) {
         return this.$message.error('获取用户列表失败！')
       }
-      console.log('res.data', res.data)
       this.userlist = res.data.users
+      console.log(this.userlist)
       this.total = res.data.total
     },
     handleSizeChange(newSize) {
@@ -302,9 +359,7 @@ export default {
       })
     },
     async showEditDialog(id) {
-      console.log(id)
       const { data: res } = await this.$http.get(`users/${id}`)
-      console.log(res)
       if (res.meta.status !== 200) return this.$message.error('查询用户失败')
       this.editForm = res.data
       this.editDialogVisible = true
@@ -319,7 +374,6 @@ export default {
           `users/${this.editForm.id}`,
           { email: this.editForm.email, mobile: this.editForm.mobile }
         )
-        console.log(res)
         if (res.meta.status !== 200) return this.$message.error('编辑信息错误')
         this.editDialogVisible = false
         this.getUserList()
@@ -340,7 +394,6 @@ export default {
       })
       if (confirmResult === 'confirm') {
         const { data: res } = await this.$http.delete(`users/${id}`)
-        console.log(res)
         if (res.meta.status !== 200) {
           return this.$message.error('删除用户失败')
         }
