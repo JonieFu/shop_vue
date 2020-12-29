@@ -78,7 +78,11 @@
             <el-button size="mini" type="primary" icon="el-icon-edit"
               >编辑</el-button
             >
-            <el-button size="mini" type="danger" icon="el-icon-delete"
+            <el-button
+              size="mini"
+              type="danger"
+              icon="el-icon-delete"
+              @click="removeRole(row.id)"
               >删除</el-button
             >
             <el-button
@@ -134,6 +138,28 @@ export default {
     this.getRolesList()
   },
   methods: {
+    async removeRole(roleId) {
+      console.log(roleId)
+      const confirmResult = await this.$confirm(
+        '此操作将永久删除该文件, 是否继续?',
+        '提示',
+        {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning',
+        }
+      ).catch((err) => err)
+      if (confirmResult !== 'confirm') {
+        return this.$message.info('取消删除')
+      } else {
+        const { data: res } = await this.$http.delete(`roles/${roleId}`)
+        if (res.meta.status !== 200) {
+          return this.$message.error('删除权限失败')
+        }
+        this.$message.success('删除成功')
+        this.getRolesList()
+      }
+    },
     async getRolesList() {
       const { data: res } = await this.$http.get('roles')
       if (res.meta.status !== 200) {
