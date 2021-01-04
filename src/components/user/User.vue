@@ -305,12 +305,12 @@ export default {
         }
       )
       console.log(this.selectedRoleId)
-      console.log(res.data.rid)
+      // console.log(res.data.rid)
       if (res.meta.status !== 200) {
         return this.$message.error('更新角色失败')
       }
-      this.getUserList()
       this.setRoleDialogVisible = false
+      this.getUserList()
     },
     async getUserList() {
       const { data: res } = await this.$http.get('users', {
