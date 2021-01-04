@@ -6,6 +6,7 @@ import './assets/css/global.css'
 import axios from "axios"
 import "./assets/fonts/iconfont.js"
 import "./assets/fonts/iconfont.css"
+import ZKTable from 'vue-table-with-tree-grid'
 Vue.prototype.$http = axios
 axios.defaults.baseURL = "https://www.liulongbin.top:8888/api/private/v1"
 axios.interceptors.request.use(config => {
@@ -15,6 +16,7 @@ axios.interceptors.request.use(config => {
 
 Vue.config.productionTip = false
 
+Vue.component('tree-table', ZKTable)
 
 new Vue({
   router,

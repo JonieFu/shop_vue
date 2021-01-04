@@ -5,7 +5,7 @@ import {
   Aside, Main, Menu, Submenu, MenuItemGroup, MenuItem, Breadcrumb,
   BreadcrumbItem, Card, Col, Row,
   Table, TableColumn, Switch, Tooltip, Pagination, Dialog, Tree, Select, Option,
-  MessageBox, Tag
+  MessageBox, Tag, Cascader
 } from 'element-ui'
 
 Vue.use(Button)
@@ -35,5 +35,6 @@ Vue.use(Tag)
 Vue.use(Tree)
 Vue.use(Select)
 Vue.use(Option)
+Vue.use(Cascader)
 Vue.prototype.$confirm = MessageBox
 Vue.prototype.$message = Message
