@@ -14,7 +14,6 @@ import 'quill/dist/quill.snow.css'
 import 'quill/dist/quill.bubble.css'
 
 Vue.use(VueQuillEditor)
-
 Vue.prototype.$http = axios
 axios.defaults.baseURL = "https://www.liulongbin.top:8888/api/private/v1"
 axios.interceptors.request.use(config => {
